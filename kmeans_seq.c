@@ -9,7 +9,8 @@
  *  Parametros usados nos testes: K = 10 clusters, ate 100 iteracoes.
  *
  *  TEMPOS DE EXECUCAO (apenas o laco do K-means, sem a leitura do arquivo)
- *  Maquina: PC pessoal, CPU com 24 threads, GPU RTX 4070 12 GB,
+ *  Maquina: Intel Core i7-13700K (16 nucleos: 8P + 8E, 24 threads),
+ *           GPU RTX 4070 12 GB,
  *           Ubuntu 24.04 no WSL2, gcc 13.3 (-O2), nvcc 13.3
  *  -------------------------------------------------------------------------
  *   Versao                    Tempo (s)    Speedup

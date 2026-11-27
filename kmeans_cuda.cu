@@ -9,7 +9,8 @@
  *
  *  TEMPOS DE EXECUCAO
  *  -------------------------------------------------------------------------
- *   Maquina: PC pessoal, GPU NVIDIA GeForce RTX 4070 12 GB, WSL2, nvcc 13.3
+ *   Maquina: Intel Core i7-13700K + NVIDIA GeForce RTX 4070 12 GB,
+ *            WSL2, nvcc 13.3
  *   Sequencial (CPU, 1 thread)            24.986 s
  *   CUDA - so o laco do K-means            1.620 s
  *   CUDA - total (copias + transposicao)   2.007 s

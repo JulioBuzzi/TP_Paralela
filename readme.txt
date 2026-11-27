@@ -119,7 +119,8 @@ CUDA (kmeans_cuda.cu):
 
 6. RESULTADOS
 -------------------------------------------------------------------------------
-Maquina: PC pessoal com CPU de 24 threads e GPU NVIDIA GeForce RTX 4070
+Maquina: Intel Core i7-13700K (16 nucleos: 8 de desempenho com
+hyperthreading + 8 de eficiencia = 24 threads) e GPU NVIDIA GeForce RTX 4070
 (12 GB), Ubuntu 24.04 no WSL2, gcc 13.3 (-O2), nvcc 13.3.
 K = 10, 100 iteracoes, MNIST completo (70.000 x 784).
 
@@ -144,9 +145,13 @@ Analise:
   - Ate 4 threads o speedup fica perto do ideal (1.94 com 2, 3.72 com 4),
     porque o passo de atribuicao nao tem dependencia entre pontos.
   - De 8 threads em diante o ganho por thread cai (5.98 com 8, 7.95 com
-    16). Motivos: mais threads disputando a memoria (cada iteracao le os
-    ~220 MB da base), o custo fixo de juntar as copias da reduction a cada
-    iteracao, e a parte que continua sequencial (lei de Amdahl).
+    16). Motivos: o i7-13700K so tem 8 nucleos de desempenho; as threads
+    alem disso caem nos 8 nucleos de eficiencia (mais lentos) ou dividem um
+    nucleo com hyperthreading. Alem disso ha mais threads disputando a
+    memoria (cada iteracao le os ~220 MB da base), o custo fixo de juntar as
+    copias da reduction a cada iteracao, e a parte que continua sequencial
+    (lei de Amdahl). Como usamos schedule(static), as threads nos nucleos
+    lentos atrasam o fim de cada laco.
   - Com 32 threads ainda melhora um pouco (8.82), mas a CPU so tem 24
     threads de hardware: acima disso as threads dividem os mesmos nucleos.
   - A GPU foi a mais rapida: 15.42x no laco. Somando a transposicao e as
