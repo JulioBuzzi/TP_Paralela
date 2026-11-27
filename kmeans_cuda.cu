@@ -9,12 +9,12 @@
  *
  *  TEMPOS DE EXECUCAO
  *  -------------------------------------------------------------------------
- *   Sequencial (CPU, 1 nucleo)            36.960 s  (Xeon 2.30GHz)
- *   CUDA - so o laco do K-means           ______ s  (GPU: __________)
- *   CUDA - total (copias + transposicao)  ______ s
- *   Speedup (laco)                        ______
- *  (preencher com a saida de ./kmeans_cuda no PARCODE - a maquina onde o
- *   codigo foi desenvolvido nao tem GPU NVIDIA)
+ *   Maquina: PC pessoal, GPU NVIDIA GeForce RTX 4070 12 GB, WSL2, nvcc 13.3
+ *   Sequencial (CPU, 1 thread)            24.986 s
+ *   CUDA - so o laco do K-means            1.620 s
+ *   CUDA - total (copias + transposicao)   2.007 s
+ *   Speedup (laco)                        15.42
+ *   Speedup (total)                       12.45
  *  -------------------------------------------------------------------------
  *
  *  Compilar:  nvcc -O2 -fmad=false kmeans_cuda.cu -o kmeans_cuda

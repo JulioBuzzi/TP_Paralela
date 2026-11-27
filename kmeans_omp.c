@@ -9,22 +9,19 @@
  *  Parametros usados nos testes: K = 10 clusters, ate 100 iteracoes.
  *
  *  TEMPOS DE EXECUCAO (apenas o laco do K-means, sem a leitura do arquivo)
- *  Maquina: Intel Xeon @ 2.30GHz, 2 nucleos fisicos, gcc 13.3, -O2
+ *  Maquina: PC pessoal, CPU com 24 threads, GPU RTX 4070 12 GB,
+ *           Ubuntu 24.04 no WSL2, gcc 13.3 (-O2), nvcc 13.3
  *  -------------------------------------------------------------------------
  *   Versao                    Tempo (s)    Speedup
- *   Sequencial                36.960       1.00
- *   OpenMP  1 thread          40.763       0.91
- *   OpenMP  2 threads         20.115       1.84
- *   OpenMP  4 threads         20.341       1.82
- *   OpenMP  8 threads         20.419       1.81
- *   OpenMP 16 threads         20.017       1.85
- *   OpenMP 32 threads         20.442       1.81
- *   CUDA (GPU)                  ver kmeans_cuda.cu / readme.txt
+ *   Sequencial                24.986       1.00
+ *   OpenMP  1 thread          25.837       0.97
+ *   OpenMP  2 threads         12.860       1.94
+ *   OpenMP  4 threads          6.711       3.72
+ *   OpenMP  8 threads          4.180       5.98
+ *   OpenMP 16 threads          3.142       7.95
+ *   OpenMP 32 threads          2.833       8.82
+ *   CUDA (so o laco)           1.620      15.42   (RTX 4070)
  *  -------------------------------------------------------------------------
- *  OBS: esta maquina tem so 2 nucleos, entao acima de 2 threads nao ha
- *  ganho (as threads extras dividem os mesmos 2 nucleos). Para ver o
- *  speedup escalar ate 32 threads, rodar ./rodar_testes.sh no PARCODE e
- *  substituir esta tabela.
  *
  *  Compilar:  gcc -O2 -fopenmp kmeans_omp.c -o kmeans_omp -lm
  *  Executar:  OMP_NUM_THREADS=8 ./kmeans_omp mnist.tsv 10 100

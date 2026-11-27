@@ -119,31 +119,36 @@ CUDA (kmeans_cuda.cu):
 
 6. RESULTADOS
 -------------------------------------------------------------------------------
-Maquina de desenvolvimento: Intel Xeon @ 2.30GHz, 2 nucleos, 7 GB RAM,
-Ubuntu 24.04, gcc 13.3 (-O2). K = 10, 100 iteracoes, MNIST completo.
+Maquina: PC pessoal com CPU de 24 threads e GPU NVIDIA GeForce RTX 4070
+(12 GB), Ubuntu 24.04 no WSL2, gcc 13.3 (-O2), nvcc 13.3.
+K = 10, 100 iteracoes, MNIST completo (70.000 x 784).
 
   Versao               Tempo (s)   Speedup
-  Sequencial            36.960      1.00
-  OpenMP  1 thread      40.763      0.91
-  OpenMP  2 threads     20.115      1.84
-  OpenMP  4 threads     20.341      1.82
-  OpenMP  8 threads     20.419      1.81
-  OpenMP 16 threads     20.017      1.85
-  OpenMP 32 threads     20.442      1.81
-  CUDA (so o laco)      ______      ______   (GPU: ____________)
+  Sequencial            24.986      1.00
+  OpenMP  1 thread      25.837      0.97
+  OpenMP  2 threads     12.860      1.94
+  OpenMP  4 threads      6.711      3.72
+  OpenMP  8 threads      4.180      5.98
+  OpenMP 16 threads      3.142      7.95
+  OpenMP 32 threads      2.833      8.82
+  CUDA (so o laco)       1.620     15.42
+  CUDA (total)           2.007     12.45   (inclui transposicao e copias)
 
 Todas as versoes deram o mesmo resultado: 100 iteracoes, SSE = 1.784651e+11,
 clusters com 8281 6043 7658 6502 5477 6447 8348 9113 6266 5865 pontos.
 
 Analise:
-  - Com 2 threads o tempo cai quase pela metade (speedup 1.84), perto do
-    ideal de 2. O que falta e o custo de criar/sincronizar as threads e
-    juntar as copias da reduction a cada iteracao.
-  - De 4 threads para cima o tempo nao melhora porque a maquina so tem 2
-    nucleos: as threads extras so disputam os mesmos nucleos. Num servidor
-    com mais nucleos (PARCODE) o speedup continua subindo, ja que o passo 1
-    nao tem dependencia entre pontos. A tabela deve ser refeita la com
-    ./rodar_testes.sh.
-  - A versao CUDA compila (testado com nvcc 12.0), mas a maquina de
-    desenvolvimento nao tem GPU NVIDIA; o tempo da GPU deve ser medido no
-    PARCODE e anotado aqui e no cabecalho de kmeans_cuda.cu.
+  - OpenMP com 1 thread e um pouco mais lento que o sequencial (0.97): e o
+    custo extra de criar a regiao paralela e fazer a reduction, sem ganho
+    nenhum por ter so 1 thread.
+  - Ate 4 threads o speedup fica perto do ideal (1.94 com 2, 3.72 com 4),
+    porque o passo de atribuicao nao tem dependencia entre pontos.
+  - De 8 threads em diante o ganho por thread cai (5.98 com 8, 7.95 com
+    16). Motivos: mais threads disputando a memoria (cada iteracao le os
+    ~220 MB da base), o custo fixo de juntar as copias da reduction a cada
+    iteracao, e a parte que continua sequencial (lei de Amdahl).
+  - Com 32 threads ainda melhora um pouco (8.82), mas a CPU so tem 24
+    threads de hardware: acima disso as threads dividem os mesmos nucleos.
+  - A GPU foi a mais rapida: 15.42x no laco. Somando a transposicao e as
+    copias CPU<->GPU, o speedup fica 12.45x. Essas copias so acontecem uma
+    vez, entao quanto mais iteracoes, mais o custo delas se dilui.
