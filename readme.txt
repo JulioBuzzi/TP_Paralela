@@ -1,10 +1,10 @@
 ===============================================================================
  K-MEANS SEQUENCIAL, OpenMP E CUDA
- Trabalho de Computacao Paralela - PUC Minas
+ Trabalho de Computacao Paralela
 ===============================================================================
 
 1. O QUE A APLICACAO FAZ
--------------------------------------------------------------------------------
+
 O K-means e um algoritmo de agrupamento (clustering). Ele recebe N pontos
 com D dimensoes e um numero K, e divide os pontos em K grupos, de forma que
 cada ponto fique no grupo cujo centro (centroide) esta mais perto dele.
@@ -34,8 +34,8 @@ Detalhes da nossa implementacao:
     versoes, sabemos que a paralelizacao nao mudou o resultado.
   - O tempo medido e so o do laco do K-means (a leitura do arquivo nao entra).
 
-2. BASE DE DADOS (REAL)
--------------------------------------------------------------------------------
+2. BASE DE DADOS
+
 MNIST: 70.000 imagens reais de digitos manuscritos (0 a 9), 28x28 pixels.
 Cada imagem vira um ponto com D = 784 dimensoes (um valor 0..255 por pixel).
 Usamos K = 10 (um grupo por digito, idealmente) e ate 100 iteracoes.
@@ -54,7 +54,7 @@ multiplicacoes e somas so no passo 1. Com 100 iteracoes a versao sequencial
 leva ~37 s (requisito: no minimo 10 s).
 
 3. ARQUIVOS
--------------------------------------------------------------------------------
+
   kmeans_seq.c     versao sequencial
   kmeans_omp.c     versao OpenMP (CPU multicore)
   kmeans_cuda.cu   versao CUDA (GPU)
@@ -67,7 +67,7 @@ marcas [OpenMP] e [CUDA], e resumidas no cabecalho de cada arquivo. Os
 tempos tambem estao no cabecalho de cada arquivo.
 
 4. COMO COMPILAR E EXECUTAR
--------------------------------------------------------------------------------
+
 Parametros dos 3 programas: <arquivo.tsv> <K> <max_iter>
 
 Sequencial:
@@ -89,7 +89,7 @@ Tudo de uma vez:
   ./rodar_testes.sh mnist.tsv 10 100
 
 5. O QUE FOI PARALELIZADO
--------------------------------------------------------------------------------
+
 OpenMP (kmeans_omp.c):
   - Passo 1: "#pragma omp parallel for" no laco dos pontos. Cada ponto e
     independente, entao cada thread pega um pedaco dos N pontos
@@ -118,7 +118,7 @@ CUDA (kmeans_cuda.cu):
     de atomics, e a ordem da soma e a mesma da versao sequencial.
 
 6. RESULTADOS
--------------------------------------------------------------------------------
+
 Maquina: Intel Core i7-13700K (16 nucleos: 8 de desempenho com
 hyperthreading + 8 de eficiencia = 24 threads) e GPU NVIDIA GeForce RTX 4070
 (12 GB), Ubuntu 24.04 no WSL2, gcc 13.3 (-O2), nvcc 13.3.
