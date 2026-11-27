@@ -1,6 +1,6 @@
 ===============================================================================
  K-MEANS SEQUENCIAL, OpenMP E CUDA
- Trabalho de Computacao Paralela
+ Trabalho de Computacao Paralela - PUC Minas
 ===============================================================================
 
 1. O QUE A APLICACAO FAZ
@@ -45,9 +45,8 @@ e o rotulo do digito (ignorado pelo K-means), as 784 colunas seguintes sao
 os pixels. O codigo aceita qualquer arquivo nesse formato (descobre D pelo
 cabecalho e N pelo numero de linhas).
 
-Como baixar (copia do MNIST no repositorio PMLB, ~15 MB compactado):
-  wget https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/mnist/mnist.tsv.gz
-  gunzip mnist.tsv.gz          # gera mnist.tsv (~128 MB)
+Fonte: copia do MNIST no repositorio PMLB (EpistasisLab/pmlb no GitHub).
+Os comandos para baixar estao na secao 4, passo 3.
 
 Custo por iteracao: N*K*D = 70000 * 10 * 784 = ~549 milhoes de diferencas,
 multiplicacoes e somas so no passo 1. Com 100 iteracoes a versao sequencial
@@ -66,27 +65,57 @@ As mudancas feitas para paralelizar estao comentadas no codigo com as
 marcas [OpenMP] e [CUDA], e resumidas no cabecalho de cada arquivo. Os
 tempos tambem estao no cabecalho de cada arquivo.
 
-4. COMO COMPILAR E EXECUTAR
+4. COMO COMPILAR E EXECUTAR (PASSO A PASSO)
 
-Parametros dos 3 programas: <arquivo.tsv> <K> <max_iter>
+Requisitos: Linux (ou WSL no Windows), gcc com OpenMP, git e wget. Para a
+versao CUDA: placa NVIDIA e o CUDA Toolkit (nvcc) instalados.
 
-Sequencial:
+Passo 1 - Instalar as ferramentas (Ubuntu/Debian):
+  sudo apt update
+  sudo apt install -y gcc bc wget git
+
+Passo 2 - Baixar o codigo:
+  git clone https://github.com/JulioBuzzi/TP_Paralela.git
+  cd TP_Paralela
+
+Passo 3 - Baixar e descompactar a base de dados (MNIST, ~128 MB):
+  wget https://media.githubusercontent.com/media/EpistasisLab/pmlb/master/datasets/mnist/mnist.tsv.gz
+  gunzip mnist.tsv.gz
+
+Passo 4 - Compilar as 3 versoes:
   gcc -O2 kmeans_seq.c -o kmeans_seq -lm
-  ./kmeans_seq mnist.tsv 10 100
-
-OpenMP (escolha o numero de threads com OMP_NUM_THREADS):
   gcc -O2 -fopenmp kmeans_omp.c -o kmeans_omp -lm
-  OMP_NUM_THREADS=8 ./kmeans_omp mnist.tsv 10 100
-
-CUDA:
   nvcc -O2 -fmad=false kmeans_cuda.cu -o kmeans_cuda
-  ./kmeans_cuda mnist.tsv 10 100
-  (-fmad=false e opcional; ele so faz a GPU arredondar igual a CPU para o
+
+  (-fmad=false e opcional; so faz a GPU arredondar igual a CPU para o
    resultado bater exatamente com a versao sequencial)
 
-Tudo de uma vez:
+Passo 5 - Executar. Os 3 programas recebem: <arquivo.tsv> <K> <max_iter>
+
+  Sequencial:
+    ./kmeans_seq mnist.tsv 10 100
+
+  OpenMP (o numero de threads e escolhido com OMP_NUM_THREADS):
+    OMP_NUM_THREADS=1  ./kmeans_omp mnist.tsv 10 100
+    OMP_NUM_THREADS=2  ./kmeans_omp mnist.tsv 10 100
+    OMP_NUM_THREADS=4  ./kmeans_omp mnist.tsv 10 100
+    OMP_NUM_THREADS=8  ./kmeans_omp mnist.tsv 10 100
+    OMP_NUM_THREADS=16 ./kmeans_omp mnist.tsv 10 100
+    OMP_NUM_THREADS=32 ./kmeans_omp mnist.tsv 10 100
+
+  CUDA:
+    ./kmeans_cuda mnist.tsv 10 100
+
+Alternativa - rodar tudo de uma vez (compila, roda seq + OpenMP com 1, 2,
+4, 8, 16 e 32 threads + CUDA, e imprime a tabela de tempos e speedups):
   chmod +x rodar_testes.sh
-  ./rodar_testes.sh mnist.tsv 10 100
+  ./rodar_testes.sh
+
+  Se o nvcc nao estiver instalado, o script pula a versao CUDA.
+
+O que cada programa imprime: numero de iteracoes, tamanho de cada cluster,
+SSE final e o tempo do laco do K-means. O SSE e os tamanhos dos clusters
+devem ser iguais nas 3 versoes.
 
 5. O QUE FOI PARALELIZADO
 
